@@ -1,0 +1,202 @@
+1.- necesidad:
+	Gestion de clientes, productos y pedidos
+	solución Segura, escalable y robusta
+	funcionar en windows y Linux
+	
+
+2.- propuestas:
+	1.1 boleta: lookup pedido - cliente 
+Una boleta es una lista de productos que esta relacionada a un cliente por su id
+
+	2.1 Seguridad: tabla empleados | hash | ocultar contraseña | 
+	2.1 Escalabilidad: orientación a objetos, separación de tablas
+
+	
+3.- estructuras:
+
+
+	Tabla Empleado:
+
+	_id		: int
+	nombre		: str
+	rut		: str (podria o no contener k)
+	correo 		: str
+	telefono	: int
+	cargo		: str
+	rol		: str
+	fecha contrato	: date
+	contraseña 	: str
+
+============================================
+
+	Tabla Cliente:
+
+	_id		: int
+	nombre		: str
+	rut		: int
+	correo		: str
+	fecha creación	: date
+	
+============================================
+	Tabla Pedido / boleta:
+
+	_id		: int
+	_id Cliente	: int
+	fecha pedido	: date
+	total pedido	: int
+
+	sub-documento info productos {[
+
+		_id producto		: int
+		cantidad		: int]},
+
+	estado		: str
+	
+}
+
+
+============================================
+	Tabla producto:
+	_id		: int
+	nombre		: str
+	descripción	: lista
+	precio		: int
+	categoria	: str
+	stock 		: int
+	
+============================================	
+
+4.- Requisitos 
+	4.1.- Gestion Clientes - Prioridad: Alta
+Descripción:
+El sistema debe permitir crear, actualizar, consultar y eliminar perfiles de clientes
+	
+	4.2.- Gestion Productos - Prioridad: Alta
+Descripción:
+CRUD del catalogo con esquema flexible para variabilidad de categorías
+
+	4.3.- Gestion Pedidos - Prioridad: Alta
+Descripción:
+Registro pedidos asociados a tablas cliente - productos, gestionar estados || pendiente - procesado - ¿enviado? ¿entregado? - cancelado || y datetime para cada uno
+
+	4.4.- Historial - Prioridad: Alta
+Descripción:
+Almacenamiento y consultas del historial de compras por cliente y rango de fecha
+
+	4.5.- Búsquedas y filtros - Prioridad: Media
+Descripción:
+Búsquedas por campos (Nombre - Categoría - Precio - Estado - Fecha), Ordenamiento por criterio
+
+	4.6 Roles y mínimo privilegio necesario - Prioridad: Media
+Descripción:
+Implementación de inicio de sesión diferido empleado - administrador
+
+	4.7 Seguridad de la Información - Prioridad: Alta
+Descripción:
+Implementar medidas de seguridad en los datos almacenados, hashing y encriptado para los datos en transito y en reposo
+
+
+Justificación de Gestor de Base de Datos:
+
+Los motivos de la selección de MongoDB como sistema gestor de la base de datos NoSQL son las siguientes:
+
+
+1. Modelado Flexible:MongoDB permite representar clientes, productos y pedidos como documentos JSON - BSON con estructuramiento flexible 
+
+2. Escalabilidad nativa: MongoDB distribuye automáticamente las colecciones entre multiples nodos, lo que satisface las proyecciones de crecimiento para una empresa como esta
+
+3. Replica sets: Garantía de alta disponibilidad sin intervención manual ante caída del nodo primario
+
+4. Seguridad: Autenticación y cifrado en transito y reposo con auditorias configurables
+
+
+
+
+
+
+
+
+
+Ejemplos de tablas:
+
+	1. Cliente
+
+{
+	"_id"		: objectid("laskdaslkdfj"),
+	"nombre" 	: "ABCDE",
+	"rut"		: 123456789,
+	"correo"	: "ABCDE@GMAIL.COM",
+	"fecha_creacion": 10-10-2010 13:00:00
+}
+
+	2. Empleado
+
+{
+	"_id"		: ObjectId("asdfnlakermf"),
+	"nombre"	: "BCDE",
+	"rut"		: 987654321,
+	"correo"	: "BCDE@GMAIL.COM"
+	"telefono"	: +56 9 1234 67890
+	"cargo" 	: "Administrador"
+	"fecha_contrato": 01-01-2001 09:30:04
+
+}
+
+	3. Producto
+
+{
+	"_id"		: ObjectId("asdnflkar"),
+	"nombre"	: "monitor"
+	"descripcion"	: [{"hz": 1000},{"tamaño_cm": 70}],
+	"precio"	: 150.000
+	"categoria"	: "computacion"
+	"stock"		: 25
+}
+
+
+	4. Pedido
+
+{
+	"_id"		: ObjectId("aldlfkas"),
+	"id_cliente"	: objectid("laskdaslkdfj"),
+	"fecha_pedido"	: new Date()
+	"productos_pedidos": [
+		{"id_producto"	: ObjectId("asdnflkar"),
+		"nombre"	: "monitor",
+		"precio"	: 150000
+		"cantidad"	: 1
+}],
+	"total_pedido"	: 150000
+	"estado"	: "entregado"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
