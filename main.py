@@ -4,9 +4,9 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
 from qt_material import apply_stylesheet
 
-from assets.mods import Constructor
-from assets.mods.Constantes import *
-from assets.mods import Funciones
+from assets.modules import Constructor
+from assets.modules.Constantes import *
+from Funciones import Funciones
 
 comando     = Funciones.Comandos()
 construir   = Constructor.Construir()

@@ -1,7 +1,7 @@
 # Generador de Botones  
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt
-from assets.mods.Constantes import *
+from assets.modules.Constantes import *
 
 class Construir:
     def header(self, texto, font_size=30):
