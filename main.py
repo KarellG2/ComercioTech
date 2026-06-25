@@ -6,10 +6,11 @@ from qt_material import apply_stylesheet
 
 from assets.modules import Constructor
 from assets.modules.Constantes import *
-from Funciones import Funciones
+from funciones import Funciones
 
 comando     = Funciones.Comandos()
 construir   = Constructor.Construir()
+funciones   = Funciones.Comandos()
 
 class ventanaPrincipal(QMainWindow):    
     def __init__(self):
@@ -32,34 +33,64 @@ class pantallaInicio(QWidget):
         self.main_window = main_window
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        layout.addWidget(construir.header("MercadoTech"))
+        layout.addWidget(construir.header("Login"))
 
         # Contenedor central
         centro_layout = QVBoxLayout()
         centro_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout_btn =    QVBoxLayout()
-        layout_btn.setAlignment(Qt.AlignmentFlag.AlignBottom)
+        layout_btn = QHBoxLayout()
+        layout_btn.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
-        titulo = QLabel("Venta de Articulos Tecnologicos")
-        titulo.setStyleSheet(f"color: {BLANCO}; font-size: 26px; font-weight: bold;")
-        titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
-        boton = construir.boton(
-                            texto   = "hola", 
-                            color   = ROJO,
-                            comando = comando.mostrar_error,
+        
+        # Crear entrada para el usuario
+        label_user, input_user  = construir.entrada(
+            label_texto         = 'Usuario',
+            placeholder         = 'Ingrese su Usuario',
+            width               = 250,
+            height              = 40
+        )
+        # Crear entrada para la contraseña
+        label_pass, input_pass  = construir.entrada(
+            label_texto         = 'Contraseña',
+            placeholder         = 'Ingrese su Contraseña',
+            width               = 250,
+            height              = 40
+        )
+        # Crear boton de inicio de sesion
+        iniciar_sesion = construir.boton(
+                            texto   = "Iniciar Sesion", 
+                            color   = NEGRO,
+                           comando = comando.mostrar_error,
                             width   = 200, 
                             height  = 50)
+
+        #usuario
+        centro_layout.addWidget(label_user)
+        centro_layout.addWidget(input_user)
+        #contraseña
+        centro_layout.addWidget(label_pass)
+        centro_layout.addWidget(input_pass)
         
-        centro_layout.addWidget(titulo)
-        centro_layout.addWidget(boton)
         centro_layout.addSpacing(40)
         
-                
+        layout_btn.addWidget(iniciar_sesion)
+        layout_btn.addSpacing(40)
         
         layout.addLayout(centro_layout)
+        layout.addLayout(layout_btn)
+
+class pantallaPrincipal(QWidget):
+    def __init__(self, main_window):
+        super().__init__()
+        self.main_window = main_window
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
 if __name__ =="__main__":
 
     app = QApplication(sys.argv)

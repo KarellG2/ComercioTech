@@ -15,3 +15,5 @@ class Comandos:
     
     def validacion(self):
         pass
+    def login(self):
+        pass
