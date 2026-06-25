@@ -6,3 +6,6 @@ BLANCO          =   '#F1F1F1'
 ROJO            =   '#e93103'
 NEGRO           =   '#222a40'
 VERDE           =   '#8ae110'
+
+ANCHO_PANTALLA  = 1000
+ALTO_PANTALLA  = 700
