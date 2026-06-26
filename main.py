@@ -10,6 +10,7 @@ from funciones import Funciones
 
 # Importar Vistas
 from views.login import PantallaInicio
+from views.dashboard import Dashboard
 
 
 comando     = Funciones.Comandos()
@@ -27,18 +28,12 @@ class ventanaPrincipal(QMainWindow):
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack)
         
-        self.pantalla_inicio = PantallaInicio(self)
+        self.pantalla_inicio    = PantallaInicio(self)
+        self.pantalla_dashboard = Dashboard(self)
         
         self.stack.addWidget(self.pantalla_inicio)
+        self.stack.addWidget(self.pantalla_dashboard)
         
-
-class pantallaPrincipal(QWidget):
-    def __init__(self, main_window):
-        super().__init__()
-        self.main_window = main_window
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
 if __name__ =="__main__":
 

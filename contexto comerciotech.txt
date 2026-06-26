@@ -17,47 +17,47 @@ Una boleta es una lista de productos que esta relacionada a un cliente por su id
 
 	Tabla Empleado:
 
-	_id		: int
-	nombre		: str
-	rut		: str (podria o no contener k)
-	correo 		: str
-	telefono	: int
-	cargo		: str
-	rol		: str
+	_id				: int
+	nombre			: str
+	rut				: str (podria o no contener k)
+	correo 			: str
+	telefono		: int
+	cargo			: str
+	rol				: str
 	fecha contrato	: date
-	contraseña 	: str
+	contraseña 		: str
 
 ============================================
 
 	Tabla Cliente:
 
-	_id		: int
-	nombre		: str
-	rut		: int
-	correo		: str
+	_id				: int
+	nombre			: str
+	rut				: int
+	correo			: str
 	fecha creación	: date
 	
 ============================================
 	Tabla Pedido / boleta:
 
-	_id		: int
-	_id Cliente	: int
+	_id				: int
+	_id Cliente		: int
 	fecha pedido	: date
 	total pedido	: int
 
 	sub-documento info productos {[
 
 		_id producto		: int
-		cantidad		: int]},
-
-	estado		: str
+		cantidad			: int,
+		estado				: str
+		]}
 	
-}
+
 
 
 ============================================
 	Tabla producto:
-	_id		: int
+	_id			: int
 	nombre		: str
 	descripción	: lista
 	precio		: int
@@ -122,22 +122,22 @@ Ejemplos de tablas:
 	1. Cliente
 
 {
-	"_id"		: objectid("laskdaslkdfj"),
-	"nombre" 	: "ABCDE",
-	"rut"		: 123456789,
-	"correo"	: "ABCDE@GMAIL.COM",
+	"_id"			: objectid("laskdaslkdfj"),
+	"nombre" 		: "ABCDE",
+	"rut"			: 123456789,
+	"correo"		: "ABCDE@GMAIL.COM",
 	"fecha_creacion": 10-10-2010 13:00:00
 }
 
 	2. Empleado
 
 {
-	"_id"		: ObjectId("asdfnlakermf"),
-	"nombre"	: "BCDE",
-	"rut"		: 987654321,
-	"correo"	: "BCDE@GMAIL.COM"
-	"telefono"	: +56 9 1234 67890
-	"cargo" 	: "Administrador"
+	"_id"			: ObjectId("asdfnlakermf"),
+	"nombre"		: "BCDE",
+	"rut"			: 987654321,
+	"correo"		: "BCDE@GMAIL.COM"
+	"telefono"		: +56 9 1234 67890
+	"cargo" 		: "Administrador"
 	"fecha_contrato": 01-01-2001 09:30:04
 
 }
@@ -145,58 +145,30 @@ Ejemplos de tablas:
 	3. Producto
 
 {
-	"_id"		: ObjectId("asdnflkar"),
-	"nombre"	: "monitor"
+	"_id"			: ObjectId("asdnflkar"),
+	"nombre"		: "monitor"
 	"descripcion"	: [{"hz": 1000},{"tamaño_cm": 70}],
-	"precio"	: 150.000
-	"categoria"	: "computacion"
-	"stock"		: 25
+	"precio"		: 150.000
+	"categoria"		: "computacion"
+	"stock"			: 25
 }
 
 
 	4. Pedido
 
 {
-	"_id"		: ObjectId("aldlfkas"),
+	"_id"			: ObjectId("aldlfkas"),
 	"id_cliente"	: objectid("laskdaslkdfj"),
 	"fecha_pedido"	: new Date()
 	"productos_pedidos": [
-		{"id_producto"	: ObjectId("asdnflkar"),
-		"nombre"	: "monitor",
-		"precio"	: 150000
-		"cantidad"	: 1
+		{
+			"id_producto"	: ObjectId("asdnflkar"),
+			"nombre"		: "monitor",
+			"precio"		: 150000
+			"cantidad"		: 1
 }],
 	"total_pedido"	: 150000
-	"estado"	: "entregado"
+	"estado"		: "entregado"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

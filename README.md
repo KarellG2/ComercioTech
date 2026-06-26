@@ -23,11 +23,13 @@ Esta solución es una aplicación de escritorio desarollada para administrar cli
 
 2. PyQt6
 
-3. MongoDB
+3. qt-material 
 
-4. PyMongo
+4. MongoDB
 
-5. Github
+5. PyMongo
+
+6. Github
 
 ## Funcionalidades
 

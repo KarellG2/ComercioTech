@@ -71,3 +71,76 @@ class Construir:
             input_field.returnPressed.connect(comando)
         
         return label, input_field
+
+    def sidebar(self, items, stack, logo, width=210):
+        frame = QFrame()
+        frame.setFixedWidth(width)
+        frame.setStyleSheet(f'background-color: {NEGRO}; border: none;')
+        
+        layout = QVBoxLayout(frame)
+        layout.setContentsMargins(0,0,0,0)
+        layout.setSpacing(0)
+        
+        logo = QLabel(logo)
+        logo.setFixedHeight(80)
+        logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        logo.setStyleSheet(f'color: {BLANCO}; font-size:16px; font-weight:bold; background-color:{NEGRO}; border:none;')
+        layout.addWidget(logo)
+        
+        button_container = QFrame()
+        button_container.setStyleSheet('background-color: transparent')
+        button_layout = QVBoxLayout(button_container)
+        button_layout.setContentsMargins(12,16,12,16)
+        button_layout.setSpacing(6)
+        button_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+        botones = []
+        
+        estilo_activo = f"""
+            QPushButton {{
+                background-color: {COLOR_PRINCIPAL};
+                color: {BLANCO};
+                text-align: left;
+                padding-left: 16px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                border: none;
+            }}
+        """
+        estilo_inactivo = f"""
+            QPushButton {{
+                background-color: transparent;
+                color: {BLANCO};
+                text-align: left;
+                padding-left: 16px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                border: none;
+            }}
+            QPushButton:hover {{
+                background-color: rgba(134, 65, 148, 80);
+            }}
+        """
+
+        def activar(index, activo):
+            stack.setCurrentIndex(index)
+            for boton in botones:
+                boton.setStyleSheet(estilo_inactivo)
+            activo.setStyleSheet(estilo_activo)
+        
+        for i, item in enumerate(items):
+            texto = f'{item.get('icono', '')} {item['texto']}'
+            boton = QPushButton(texto)
+            boton.setFixedHeight(48)
+            boton.setStyleSheet(estilo_activo if i == 0 else estilo_inactivo)
+            boton.clicked.connect(lambda checked, idx=item['index'], btn=boton: activar(idx,btn))
+            botones.append(boton)
+            
+            button_layout.addWidget(boton)
+            
+        button_layout.addStretch()
+        layout.addWidget(button_container)
+        
+        return frame
