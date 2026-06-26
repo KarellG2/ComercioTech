@@ -1,0 +1,218 @@
+{
+  "clientes": [
+    {
+      "_id": 1,
+      "nombre": "Sofía Gahona",
+      "rut": "20123456-7",
+      "telefono": "+56991234567",
+      "correo": "sofia.gahona@email.cl",
+      "fecha_creacion": "2024-01-15T10:30:00"
+    },
+    {
+      "_id": 2,
+      "nombre": "Matías Rojas",
+      "rut": "19876543-K",
+      "telefono": "+56993456789",
+      "correo": "matias.rojas@email.cl",
+      "fecha_creacion": "2024-03-20T14:10:00"
+    },
+    {
+      "_id": 3,
+      "nombre": "Camila Fuentes",
+      "rut": "17654321-9",
+      "telefono": "+56998765432",
+      "correo": "camila.fuentes@email.cl",
+      "fecha_creacion": "2025-02-11T09:20:00"
+    }
+  ],
+
+  "empleados": [
+    {
+      "_id": 1,
+      "nombre": "Carlos Muñoz",
+      "rut": "15432123-8",
+      "correo": "c.munoz@comerciotech.cl",
+      "telefono": "+56992345678",
+      "rol": "Administrador",
+      "fecha_contrato": "2023-06-01T08:00:00",
+      "contraseña": "$2b$12$eX4J7l0sP8L9Qm8GmDk2Ce9N9LQK8F1J4R7K2"
+    },
+    {
+      "_id": 2,
+      "nombre": "Daniela Herrera",
+      "rut": "18456789-2",
+      "correo": "d.herrera@comerciotech.cl",
+      "telefono": "+56994561234",
+      "rol": "Empleado",
+      "fecha_contrato": "2024-02-15T09:30:00",
+      "contraseña": "$2b$12$A5sL8fP0R2K7D1YhL9M8N"
+    }
+  ],
+
+  "productos": [
+    {
+      "_id": 1,
+      "nombre": "Monitor Gamer 24\"",
+      "descripcion": [
+        {
+          "marca": "Samsung"
+        },
+        {
+          "hz": 144
+        },
+        {
+          "resolucion": "1920x1080"
+        }
+      ],
+      "precio": 189990,
+      "categoria": "Monitores",
+      "stock": 20
+    },
+    {
+      "_id": 2,
+      "nombre": "Teclado Mecánico RGB",
+      "descripcion": [
+        {
+          "switch": "Red"
+        },
+        {
+          "conexion": "USB"
+        }
+      ],
+      "precio": 69990,
+      "categoria": "Periféricos",
+      "stock": 35
+    },
+    {
+      "_id": 3,
+      "nombre": "Mouse Inalámbrico",
+      "descripcion": [
+        {
+          "dpi": 16000
+        },
+        {
+          "conexion": "Bluetooth"
+        }
+      ],
+      "precio": 35990,
+      "categoria": "Periféricos",
+      "stock": 50
+    },
+    {
+      "_id": 4,
+      "nombre": "Notebook Lenovo IdeaPad",
+      "descripcion": [
+        {
+          "procesador": "Intel Core i5"
+        },
+        {
+          "ram": "16GB"
+        },
+        {
+          "ssd": "512GB"
+        }
+      ],
+      "precio": 749990,
+      "categoria": "Computadores",
+      "stock": 12
+    },
+    {
+      "_id": 5,
+      "nombre": "Disco SSD 1TB",
+      "descripcion": [
+        {
+          "tipo": "NVMe"
+        },
+        {
+          "velocidad": "3500MB/s"
+        }
+      ],
+      "precio": 99990,
+      "categoria": "Almacenamiento",
+      "stock": 28
+    }
+  ],
+
+  "pedidos": [
+    {
+      "_id": 1001,
+      "id_cliente": 1,
+      "fecha_pedido": "2025-08-12T15:30:00",
+      "productos_pedidos": [
+        {
+          "id_producto": 1,
+          "cantidad": 1,
+          "precio": 189990
+        },
+        {
+          "id_producto": 2,
+          "cantidad": 1,
+          "precio": 69990
+        }
+      ],
+      "total_pedido": 259980,
+      "estado": "entregado"
+    },
+    {
+      "_id": 1002,
+      "id_cliente": 2,
+      "fecha_pedido": "2025-11-03T11:10:00",
+      "productos_pedidos": [
+        {
+          "id_producto": 4,
+          "cantidad": 1,
+          "precio": 749990
+        }
+      ],
+      "total_pedido": 749990,
+      "estado": "enviado"
+    },
+    {
+      "_id": 1003,
+      "id_cliente": 3,
+      "fecha_pedido": "2026-01-18T18:45:00",
+      "productos_pedidos": [
+        {
+          "id_producto": 3,
+          "cantidad": 2,
+          "precio": 35990
+        },
+        {
+          "id_producto": 5,
+          "cantidad": 1,
+          "precio": 99990
+        }
+      ],
+      "total_pedido": 171970,
+      "estado": "procesado"
+    },
+    {
+      "_id": 1004,
+      "id_cliente": 1,
+      "fecha_pedido": "2026-03-10T09:15:00",
+      "productos_pedidos": [
+        {
+          "id_producto": 5,
+          "cantidad": 3,
+          "precio": 99990
+        }
+      ],
+      "total_pedido": 299970,
+      "estado": "pendiente"
+    },
+    {
+      "_id": 1005,
+      "id_cliente": 2,
+      "fecha_pedido": "2026-05-01T16:50:00",
+      "productos_pedidos": [
+        {
+          "id_producto": 2,
+          "cantidad": 2,
+          "precio": 69990
+        }
+      ],
+      "total_pedido": 139980,
+      "estado": "cancelado"
+    }
+  ]
+}

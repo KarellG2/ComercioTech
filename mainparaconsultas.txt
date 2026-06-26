@@ -1,0 +1,69 @@
+from bd import BaseDatos
+
+bd = BaseDatos()
+
+while True:
+
+    print("\n========== COMERCIOTECH ==========")
+    print("1. Ver clientes")
+    print("2. Buscar cliente por ID")
+    print("3. Ver productos")
+    print("4. Buscar productos por categoría")
+    print("5. Ver pedidos")
+    print("6. Buscar pedidos por cliente")
+    print("7. Ver empleados")
+    print("8. Buscar administradores")
+    print("9. Ver cliente y pedidos (Lookup)")
+    print("10. Total comprado por cliente")
+    print("11. Producto más vendido")
+    print("12. Historial de compras")
+    print("13. Salir")
+
+    opcion = input("\nSeleccione una opción: ")
+
+    if opcion == "1":
+        bd.ver_clientes()
+
+    elif opcion == "2":
+        id_cliente = int(input("Ingrese el ID del cliente: "))
+        bd.buscar_cliente(id_cliente)
+
+    elif opcion == "3":
+        bd.ver_productos()
+
+    elif opcion == "4":
+        categoria = input("Ingrese la categoría: ")
+        bd.buscar_categoria(categoria)
+
+    elif opcion == "5":
+        bd.ver_pedidos()
+
+    elif opcion == "6":
+        id_cliente = int(input("Ingrese el ID del cliente: "))
+        bd.buscar_pedido_cliente(id_cliente)
+
+    elif opcion == "7":
+        bd.ver_empleados()
+
+    elif opcion == "8":
+        bd.buscar_administradores()
+
+    elif opcion == "9":
+        bd.pedidos_clientes()
+
+    elif opcion == "10":
+        bd.total_por_cliente()
+
+    elif opcion == "11":
+        bd.producto_mas_vendido()
+
+    elif opcion == "12":
+        id_cliente = int(input("Ingrese el ID del cliente: "))
+        bd.historial_cliente(id_cliente)
+
+    elif opcion == "13":
+        print("Programa finalizado.")
+        break
+
+    else:
+        print("Opción no válida.")
