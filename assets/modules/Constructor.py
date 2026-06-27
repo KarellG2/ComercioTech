@@ -149,6 +149,11 @@ class Construir:
 
         headers = headers or []
         datos   = datos   or []
+
+        def formatear_valor(valor):
+            if isinstance(valor, (list, tuple, set)):
+                return "\n".join(str(elemento) for elemento in valor)
+            return str(valor)
  
         tablas = QTableWidget(len(datos), len(headers))
         tablas.setHorizontalHeaderLabels(headers)
@@ -201,6 +206,7 @@ class Construir:
         tablas.verticalHeader().setVisible(False)
         tablas.horizontalHeader().setStretchLastSection(True)
         tablas.setShowGrid(True)
+        tablas.setWordWrap(True)
         tablas.setFocusPolicy(Qt.FocusPolicy.NoFocus)
  
         if width and height:
@@ -208,11 +214,12 @@ class Construir:
  
         for r, fila in enumerate(datos):
             for c, valor in enumerate(fila):
-                item = QTableWidgetItem(str(valor))
+                item = QTableWidgetItem(formatear_valor(valor))
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 tablas.setItem(r, c, item)
  
         tablas.resizeColumnsToContents()
+        tablas.resizeRowsToContents()
         tablas.horizontalHeader().setStretchLastSection(True)
  
         if seleccionar:

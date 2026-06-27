@@ -10,10 +10,10 @@ from funciones import Funciones
 
 construir = Constructor.Construir()
 
-class Dashboard(QWidget):
+class Clientes(QWidget):
     def __init__(self, main_window):
         super().__init__()
-        self.setWindowTitle('dashboard')
+        self.setWindowTitle('Clientes')
         self.setFixedSize(ANCHO_PANTALLA, ALTO_PANTALLA)
         self.setStyleSheet(f'background-color:{NEGRO}')
 

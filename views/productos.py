@@ -10,14 +10,14 @@ from funciones import Funciones
 
 construir = Constructor.Construir()
 
-class Dashboard(QWidget):
+class Productos(QWidget):
     def __init__(self, main_window):
         super().__init__()
-        self.setWindowTitle('dashboard')
+        self.setWindowTitle('productos')
         self.setFixedSize(ANCHO_PANTALLA, ALTO_PANTALLA)
         self.setStyleSheet(f'background-color:{NEGRO}')
-
-        self.mainWindow = main_window  
+        
+        self.mainWindow = main_window
         
         self.content_stack = QStackedWidget()
         
@@ -33,7 +33,7 @@ class Dashboard(QWidget):
                 {'texto':'productos','icono':'b','index':1}
             ],
             stack = self.content_stack,
-            logo='Comercio Tech'
+            logo='comerciotech'
         )      
         sidebar_layout.addWidget(sidebar)
         sidebar_layout.addWidget(self.content_stack)
@@ -43,8 +43,8 @@ class Dashboard(QWidget):
         self.setLayout(central_layout)
         
         tabla = construir.tabla(
-            headers=['Nombre', 'Correo', 'numero'],
-            datos=[['Cliente 1', 'cliente1@example.com', '123456789'], ['Cliente 2', 'cliente2@example.com', '987654321']]
+            headers=['Nombre', 'Precio'],
+            datos=[['Producto 1', '$10.00'], ['Producto 2', '$20.00']]
         )
         central_layout.addWidget(tabla)
         

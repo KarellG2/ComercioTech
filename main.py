@@ -11,6 +11,9 @@ from funciones import Funciones
 # Importar Vistas
 from views.login import PantallaInicio
 from views.dashboard import Dashboard
+from views.pedidos import Pedidos
+from views.productos import Productos
+from views.clientes import Clientes
 
 
 comando     = Funciones.Comandos()
@@ -31,11 +34,17 @@ class ventanaPrincipal(QMainWindow):
         
         self.pantalla_inicio    = PantallaInicio(self)
         self.pantalla_dashboard = Dashboard(self)
-        
+        self.pantalla_productos = Productos(self)
+        self.pantalla_clientes = Clientes(self)
+        self.pantalla_pedidos = Pedidos(self)
         # Vistas
-        self.stack.addWidget(self.pantalla_dashboard)
-        self.stack.addWidget(self.pantalla_inicio)
         
+        self.stack.addWidget(self.pantalla_pedidos)
+        self.stack.addWidget(self.pantalla_clientes)
+        self.stack.addWidget(self.pantalla_dashboard)
+        self.stack.addWidget(self.pantalla_productos)
+        self.stack.addWidget(self.pantalla_inicio)
+
         # Widgets persistentes
         self.boton_cerrar = QPushButton("X", self) 
         self.boton_cerrar.setFixedSize(40, 40)
