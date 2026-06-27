@@ -47,37 +47,40 @@ Utiliza una arquitectura modular con el paradigma de Programacion Orientada a Ob
 =================================================================================================================================================
 
 # Paleta de Colores Declarada:
-    1.- COLOR_PRINCIPAL = '#864194'
-    2.- HOVER_COLOR     = '#00FFAA'
-    3.- BLANCO          = '#F1F1F1'
-    4.- ROJO            = '#e93103'
-    5.- NEGRO           = '#222a40'
+1.  COLOR_PRINCIPAL = '#864194'
+2.  HOVER_COLOR     = '#00FFAA'
+3.  BLANCO          = '#F1F1F1'
+4.  ROJO            = '#e93103'
+5.  NEGRO           = '#222a40'
 
 =================================================================================================================================================
 
 
-## MODULO principal / main.py
+# MODULO principal / main.py
 
-# El script principal, administrador del ciclo de vida de la aplicacion
-
-=================================================================================================================================================
-
-# Clase ventanaPrincipal
-
-    1.- Hereda de la clase QMainWindow y establece "MercadoTech" como titulo principal
-
-    2.- Define una resolucion de 800x550 pixeles y un fondo general con la constante NEGRO
-
-    3.- Implementa un control de visualizacion con el controlador QStacckedWidget, para apilar diferentes pantallas, iniciando con la vista principla pantalla_inicio
-
+## El script principal, administrador del ciclo de vida de la aplicacion
 
 =================================================================================================================================================
 
+## Modulo main - Clase ventanaPrincipal
 
-# Clase pantallaInicio
+1.  Hereda de la clase QMainWindow y establece "MercadoTech" como titulo principal
 
-    1.- Hereda QWidget y estructura el layout principal
+2.  Define una resolucion de 800x550 pixeles y un fondo general con la constante NEGRO
 
-    2.- Integra el metodo header("MercadoTech") desde el modulo Constructor.py
+3.  Implementa un control de visualizacion con el controlador QStacckedWidget, para apilar diferentes pantallas, iniciando con la vista principla pantalla_inicio
 
-    3.- Renderiza el contenedor central con un texto indicando un subtitulo: "Venta de Articulos Tecnologicos"
+
+=================================================================================================================================================
+
+
+## Modulo login - Clase pantallaInicio
+
+1.  Hereda QWidget y estructura el layout principal
+
+2.  Integra el metodo header("ComercioTech") desde el modulo Constructor.py
+
+3.  Renderiza el contenedor central con un texto indicando un subtitulo: "Venta de Articulos Tecnologicos"
+
+## Modulo dashboard - Clase Dashboard
+

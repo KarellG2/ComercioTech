@@ -38,7 +38,6 @@ class PantallaInicio(QWidget):
         layout_btn.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         
-        
         # Crear entrada para el usuario
         label_user, input_user  = construir.entrada(
             label_texto         = 'Usuario',
@@ -72,7 +71,7 @@ class PantallaInicio(QWidget):
         
         layout_btn.addWidget(iniciar_sesion)
         layout_btn.addSpacing(40)
-        
+                
         content_layout.addLayout(centro_layout)
         content_layout.addLayout(layout_btn)
         layout.addStretch(1)

@@ -1,6 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget,QVBoxLayout,QHBoxLayout, QStackedWidget, QLabel
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 from qt_material import apply_stylesheet
 
 from assets.modules import Constructor

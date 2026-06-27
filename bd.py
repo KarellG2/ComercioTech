@@ -234,14 +234,14 @@ class BaseDatos:
         for empleado in empleados:
             print(empleado)
 
-    def login(self, correo, contraseña):
+    # def login(self, correo, contraseña):
 
-        empleado = self.db.empleados.find_one(
-            {
-                "correo": correo,
-                "contraseña": contraseña
-            }
-        )
+    #     empleado = self.db.empleados.find_one(
+    #         {
+    #             "correo": correo,
+    #             "contraseña": contraseña
+    #         }
+    #     )
 
         if empleado:
             print("Inicio de sesión correcto.")

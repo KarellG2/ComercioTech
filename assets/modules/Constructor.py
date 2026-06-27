@@ -144,3 +144,86 @@ class Construir:
         layout.addWidget(button_container)
         
         return frame
+    
+    def tabla(self, headers=None, datos=None, width=None, height=None, seleccionar=None):
+
+        headers = headers or []
+        datos   = datos   or []
+ 
+        tablas = QTableWidget(len(datos), len(headers))
+        tablas.setHorizontalHeaderLabels(headers)
+ 
+        tablas.setStyleSheet(f"""
+            QTableWidget {{
+                background-color: {NEGRO};
+                color: {BLANCO};
+                border: none;
+                outline: none;
+                font-size: 13px;
+                alternate-background-color: rgba(255,255,255,0.04);
+                gridline-color: rgba(255,255,255,0.08);
+            }}
+            QTableWidget::item {{
+                padding: 6px 14px;
+            }}
+            QTableWidget::item:selected {{
+                background-color: {COLOR_PRINCIPAL};
+                color: {BLANCO};
+            }}
+            QHeaderView::section {{
+                background-color: {COLOR_PRINCIPAL};
+                color: {BLANCO};
+                font-weight: bold;
+                font-size: 13px;
+                padding: 8px 14px;
+                border: none;
+                border-right: 1px solid rgba(255,255,255,0.12);
+            }}
+            QScrollBar:vertical {{
+                background: {NEGRO};
+                width: 6px;
+                border-radius: 3px;
+            }}
+            QScrollBar::handle:vertical {{
+                background: {COLOR_PRINCIPAL};
+                border-radius: 3px;
+            }}
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+                height: 0px;
+            }}
+        """)
+ 
+        tablas.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        tablas.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        tablas.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        tablas.setAlternatingRowColors(True)
+        tablas.verticalHeader().setVisible(False)
+        tablas.horizontalHeader().setStretchLastSection(True)
+        tablas.setShowGrid(True)
+        tablas.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+ 
+        if width and height:
+            tablas.setFixedSize(width, height)
+ 
+        for r, fila in enumerate(datos):
+            for c, valor in enumerate(fila):
+                item = QTableWidgetItem(str(valor))
+                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                tablas.setItem(r, c, item)
+ 
+        tablas.resizeColumnsToContents()
+        tablas.horizontalHeader().setStretchLastSection(True)
+ 
+        if seleccionar:
+            def on_seleccion():
+                fila = tablas.currentRow()
+                if fila < 0:
+                    return
+                fila_dict = {
+                    headers[c]: tablas.item(fila, c).text()
+                    for c in range(len(headers))
+                }
+                seleccionar(fila_dict)
+            tablas.itemSelectionChanged.connect(on_seleccion)
+ 
+        return tablas
