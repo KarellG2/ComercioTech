@@ -81,3 +81,121 @@ Utiliza una arquitectura modular con el paradigma de Programacion Orientada a Ob
     2.- Integra el metodo header("MercadoTech") desde el modulo Constructor.py
 
     3.- Renderiza el contenedor central con un texto indicando un subtitulo: "Venta de Articulos Tecnologicos"
+
+
+
+
+=================================================================================================================================================
+
+
+
+## MODULO de Base de Datos / bd.py
+
+Este módulo gestiona la conexión, persistencia y procesamiento NoSQL con la base de datos distribuida MongoDB clúster `ctech`. Centraliza la lógica de negocio mediante la clase `BaseDatos`, proveyendo soporte multiplataforma (Windows/Linux) seguro y escalable.
+
+=================================================================================================================================================
+
+# 1.- Justificación Técnica del DBMS (MongoDB)
+
+    1.- Modelado Flexible: Representando las entidades complejas (Clientes, Productos, Empleados y Pedidos) como documentos JSON/BSON dinámicos, adaptándose a la variabilidad de atributos sin alterar los esquemas rígidos.
+    
+    2.- Escalabilidad Nativa: Soporta el crecimiento horizontal mediante sharding distribuyendo colecciones de forma automática entre múltiples nodos, garantizando el rendimiento ante un alto volumen de transacciones de MercadoTech.
+    
+    3.- Alta Disponibilidad (Replica Sets): Implementa las tolerancias a fallos mediante replicación automatizada, asegurando la continuidad operativa y failover automático si el nodo primario llega a quedar inaccesible.
+    
+    4.- Seguridad Integral: Capacidad nativa de aislamiento mediante mecanismos de autenticación robustos, control de acceso basado en roles (RBAC) y soporte para cifrado de datos tanto en tránsito (TLS/SSL) como en reposo.
+
+
+# 2.- Esquema de Datos y Diccionario de Colecciones
+
+    1.- Colección "clientes"
+    Almacena la información de contacto de los compradores.
+    - Campos: _id (ObjectId), nombre (str), rut (Int), correo (str), fecha_creacion (DateTime).
+    
+    Ejemplo de documento:
+    ```json
+    {
+        "_id": "667cb4a2f1d2c3a4b5e6f7a8",
+        "nombre": "ABCDE",
+        "rut": 123456789,
+        "correo": "ABCDE@GMAIL.COM",
+        "fecha_creacion": "10-10-2010 13:00:00"
+    }
+    ```
+
+    2.- Colección "empleados"
+    Almacena las credenciales y el control de acceso diferido según el nivel de privilegios asignado. 
+    Se aplica directivas de seguridad protegiendo contraseñas mediante funciones hash.
+    - Campos: _id (ObjectId), nombre (str), rut (str), correo (str), telefono (str), 
+    cargo (String), rol (String), fecha_contrato (DateTime), contraseña (str/hash).
+    
+    Ejemplo de documento:
+    ```json
+    {
+        "_id": "667cb4a2f1d2c3a4b5e6f7a9",
+        "nombre": "BCDE",
+        "rut": "987654321-K",
+        "correo": "BCDE@GMAIL.COM",
+        "telefono": "+56912346789",
+        "cargo": "Administrador",
+        "rol": "admin",
+        "fecha_contrato": "01-01-2001 09:30:04",
+        "contrasena": "$2b$12$eImiTxAk4vmM8Kj3W..."
+    }
+    ```
+
+    3.- Colección "productos"
+    Almacena la información de los productos registrados en el sistema, dependiendo del producto su descripción
+    puede ser una lista con un datos mas especificos.
+    - Campos: _id (ObjectId), nombre (str), descripcion (lista), precio (Int), categoria (str), stock (Int).
+    
+    Ejemplo de documento:
+    ```json
+    {
+        "_id": "667cb4a2f1d2c3a4b5e6f7b0",
+        "nombre": "monitor",
+        "descripcion": [
+            { "hz": 1000 },
+            { "tamano_cm": 70 }
+        ],
+        "precio": 150000,
+        "categoria": "computacion",
+        "stock": 25
+    }
+    ```
+
+    4.- Colección "pedidos"
+    Almacena el procesamiento de boletas de venta. Relacionandose con las entidades mediante referencias cruzadas a través del identificador del cliente, integrando un subdocumento que contiene el identificador del producto, nombre, precio y cantidad de los ítems comprados.
+    - Campos: _id (ObjectId), id_cliente (ObjectId), fecha_pedido (DateTime), productos_pedidos (lista), total_pedido (Int), estado (str).
+    
+    Ejemplo de documento:
+    ```json
+    {
+        "_id": "667cb4a2f1d2c3a4b5e6f7b1",
+        "id_cliente": "667cb4a2f1d2c3a4b5e6f7a8",
+        "fecha_pedido": "2026-06-26T22:30:00Z",
+        "productos_pedidos": [
+            {
+                "id_producto": "667cb4a2f1d2c3a4b5e6f7b0",
+                "nombre": "monitor",
+                "precio": 150000,
+                "cantidad": 1
+            }
+        ],
+        "total_pedido": 150000,
+        "estado": "entregado"
+    }
+    ```
+
+
+# 3.- Mapeo de Operaciones y Cobertura de Requisitos de Negocio
+
+    1.- Gestión de Clientes: Métodos funcionales `agregar_cliente()`, `actualizar_cliente()`, `eliminar_cliente()` y `buscar_cliente()`. Cubre el ciclo completo de operaciones CRUD operando directamente con comandos (`insert_one`, `update_one`, `delete_one`).
+    
+    2.- Gestión de Productos: Métodos funcionales `agregar_producto()`, `actualizar_producto()` y `eliminar_producto()`. Permite el aprovisionamiento dinámico de existencias y actualizaciones críticas del stock.
+    
+    3.- Gestión de Pedidos y Generación de Boletas: Resuelto mediante operaciones de agregación complejas. El método `pedidos_clientes()` implementa la etapa `$lookup` para cruzar dinámicamente la colección de pedidos con los metadatos del cliente emisor del flujo. Los estados transicionales quedan validados mediante marcas de tiempo (timestamp) en el campo `fecha_pedido`.
+    
+    4.- Historial de Transacciones: El pipeline analítico implementado permite consultar el comportamiento histórico de compras y calcular resúmenes contables automáticos por cliente usando la agregación `$group` y operadores lógicos como `$sum` dentro del método `total_por_cliente()`.
+    
+    5.- Inteligencia de Negocio / Reportes: El método `producto_mas_vendido()` ejecuta un pipeline de agregación avanzado que es una desestructura de arreglos internos mediante `$unwind`, consolidando las cantidades vendidas por identificador usando el `$group` y ordena descendentemente mediante `$sort` para extraer el top de artículos líderes en ventas.
