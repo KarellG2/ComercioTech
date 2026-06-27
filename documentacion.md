@@ -80,7 +80,4 @@ Utiliza una arquitectura modular con el paradigma de Programacion Orientada a Ob
 
 2.  Integra el metodo header("ComercioTech") desde el modulo Constructor.py
 
-3.  Renderiza el contenedor central con un texto indicando un subtitulo: "Venta de Articulos Tecnologicos"
-
-## Modulo dashboard - Clase Dashboard
-
+    3.- Renderiza el contenedor central con un texto indicando un subtitulo: "Venta de Articulos Tecnologicos"
