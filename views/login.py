@@ -63,12 +63,14 @@ class PantallaInicio(QWidget):
         #usuario
         centro_layout.addWidget(label_user)
         centro_layout.addWidget(input_user)
+        
         #contraseña
         centro_layout.addWidget(label_pass)
         centro_layout.addWidget(input_pass)
         
         centro_layout.addSpacing(40)
         
+        # Boton de inicio de sesion
         layout_btn.addWidget(iniciar_sesion)
         layout_btn.addSpacing(40)
                 

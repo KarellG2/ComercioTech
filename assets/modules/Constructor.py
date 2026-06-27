@@ -162,6 +162,7 @@ class Construir:
                 font-size: 13px;
                 alternate-background-color: rgba(255,255,255,0.04);
                 gridline-color: rgba(255,255,255,0.08);
+                padding: 45px;
             }}
             QTableWidget::item {{
                 padding: 6px 14px;
