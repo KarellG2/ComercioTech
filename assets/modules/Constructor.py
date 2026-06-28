@@ -41,7 +41,7 @@ class Construir:
         if comando:
             btn.clicked.connect(comando)
         return btn
-    
+
     def entrada(self, comando=None, color=None, fg=None, width=210, height=40, label_texto = 'campo', placeholder='', password=False):
         label=QLabel(label_texto)
         label.setStyleSheet(f'color: {BLANCO}; font-size:13px; font-weight:bold;')
@@ -66,13 +66,13 @@ class Construir:
         """)
 
         if password:
-            input_field.setEchoMode(QLineEdit.echoMode.Password)
+            input_field.setEchoMode(QLineEdit.EchoMode.Password)
         if comando:
             input_field.returnPressed.connect(comando)
         
         return label, input_field
 
-    def sidebar(self, items, stack, logo, width=210):
+    def sidebar(self, items, stack, logo, width=210, active_index=0):
         frame = QFrame()
         frame.setFixedWidth(width)
         frame.setStyleSheet(f'background-color: {NEGRO}; border: none;')
@@ -130,18 +130,24 @@ class Construir:
                 boton.setStyleSheet(estilo_inactivo)
             activo.setStyleSheet(estilo_activo)
         
-        for i, item in enumerate(items):
-            texto = f'{item.get('icono', '')} {item['texto']}'
-            boton = QPushButton(texto)
+
+        for item in items:
+            icono = item.get('icono', '')
+            texto = item.get('texto', '')
+            index = item.get('index', 0)
+
+            boton = QPushButton(f'{icono} {texto}'.strip())
             boton.setFixedHeight(48)
-            boton.setStyleSheet(estilo_activo if i == 0 else estilo_inactivo)
-            boton.clicked.connect(lambda checked, idx=item['index'], btn=boton: activar(idx,btn))
+            boton.setCursor(Qt.CursorShape.PointingHandCursor)
+            boton.setStyleSheet(estilo_activo if index == active_index else estilo_inactivo)
+            boton.clicked.connect(lambda checked=False, idx=index, btn=boton: activar(idx, btn))
+
             botones.append(boton)
-            
             button_layout.addWidget(boton)
-            
+
         button_layout.addStretch()
         layout.addWidget(button_container)
+
         
         return frame
     
@@ -168,6 +174,7 @@ class Construir:
                 alternate-background-color: rgba(255,255,255,0.04);
                 gridline-color: rgba(255,255,255,0.08);
                 padding: 45px;
+                margin: 25px;
             }}
             QTableWidget::item {{
                 padding: 6px 14px;

@@ -33,17 +33,11 @@ class ventanaPrincipal(QMainWindow):
         self.setCentralWidget(self.stack)
         
         self.pantalla_inicio    = PantallaInicio(self)
-        self.pantalla_dashboard = Dashboard(self)
-        self.pantalla_productos = Productos(self)
-        self.pantalla_clientes = Clientes(self)
-        self.pantalla_pedidos = Pedidos(self)
         # Vistas
         
-        self.stack.addWidget(self.pantalla_pedidos)
-        self.stack.addWidget(self.pantalla_clientes)
-        self.stack.addWidget(self.pantalla_dashboard)
-        self.stack.addWidget(self.pantalla_productos)
         self.stack.addWidget(self.pantalla_inicio)
+        self.stack.addWidget(self.panel())
+        self.stack.setCurrentIndex(0)
 
         # Widgets persistentes
         self.boton_cerrar = QPushButton("X", self) 
@@ -76,7 +70,44 @@ class ventanaPrincipal(QMainWindow):
     def mouseReleaseEvent(self, event):#reset click
         self.arrastrable = False
 
-
+    def panel(self):
+        panel = QWidget()
+        panel.setStyleSheet(f'background-color: {NEGRO};')
+        
+        layout = QHBoxLayout(panel)
+        layout.setContentsMargins(0,0,0,0)
+        layout.setSpacing(0)
+        
+        self.content_stack = QStackedWidget()
+        
+        self.vistaDashboard = Dashboard(self)
+        self.vistaProductos = Productos(self)
+        self.vistaClientes = Clientes(self)
+        self.vistaPedidos = Pedidos(self)
+        
+        self.content_stack.addWidget(self.vistaDashboard)
+        self.content_stack.addWidget(self.vistaProductos)
+        self.content_stack.addWidget(self.vistaClientes)
+        self.content_stack.addWidget(self.vistaPedidos)
+        
+        sidebar = construir.sidebar(
+            items=[
+                {'texto': 'Dashboard', 'index': 0},
+                {'texto': 'Productos', 'index': 1},
+                {'texto': 'Clientes', 'index': 2},
+                {'texto': 'Pedidos', 'index': 3}
+            ],
+            stack = self.content_stack,
+            logo= 'ComercioTech',
+            active_index=0
+        )
+        layout.addWidget(sidebar)
+        layout.addWidget(self.content_stack)
+        return panel
+    
+    def mostrar_vista(self):
+        self.stack.setCurrentIndex(1)
+        self.content_stack.setCurrentIndex(0)
 
 if __name__ =="__main__":
 
