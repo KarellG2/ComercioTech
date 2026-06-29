@@ -1,7 +1,7 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QStackedWidget, QLabel, QLineEdit, QMessageBox, QPushButton
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QStackedWidget, QPushButton, QVBoxLayout, QFrame, QLabel, QLineEdit, QComboBox
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QIcon
 from qt_material import apply_stylesheet
 
 from assets.modules import Constructor
@@ -28,6 +28,7 @@ class ventanaPrincipal(QMainWindow):
         self.setFixedSize(ANCHO_PANTALLA,ALTO_PANTALLA)
         self.setStyleSheet(f"background-color:{NEGRO}")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        self.setWindowIcon(QIcon("assets/images/icon.ico")) 
 
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack)
@@ -90,6 +91,88 @@ class ventanaPrincipal(QMainWindow):
         self.content_stack.addWidget(self.vistaClientes)
         self.content_stack.addWidget(self.vistaPedidos)
         
+        self.label_busqueda, self.input_busqueda = construir.entrada(
+            label_texto         = 'Busqueda',
+            placeholder         = 'Ingrese su búsqueda',
+            width               = 250,
+            height              = 40
+        )
+
+        self.combo_filtro = QComboBox()
+        self.combo_filtro.addItems([
+            'Todos',
+            'Nombre',
+            'Correo',
+            'Numero',
+            'Categoria',
+            'Precio',
+            'Estado'
+        ])
+        self.combo_filtro.setFixedSize(180, 40)
+        self.combo_filtro.setStyleSheet(f'''
+            QComboBox {{
+                background-color: transparent;
+                color: {BLANCO};
+                border: 2px solid {COLOR_PRINCIPAL};
+                border-radius: 20px;
+                padding: 0 12px;
+                font-size: 13px;
+            }}
+            QComboBox::drop-down {{
+                border: none;
+                width: 28px;
+            }}
+            QComboBox QAbstractItemView {{
+                background-color: {NEGRO};
+                color: {BLANCO};
+                selection-background-color: {COLOR_PRINCIPAL};
+                border: 1px solid {COLOR_PRINCIPAL};
+            }}
+        ''')
+
+        self.boton_limpiar_filtro = construir.boton(
+            texto='Limpiar',
+            comando=None,
+            color=NEGRO,
+            fg=BLANCO,
+            width=120,
+            height=40
+        )
+
+        buscador = QFrame()
+        buscador.setStyleSheet(f'''
+            QFrame {{
+                background-color: {NEGRO};
+                border: {NEGRO};
+            }}
+        ''')
+
+        buscador_layout = QVBoxLayout(buscador)
+        buscador_layout.setContentsMargins(18, 16, 18, 16)
+        buscador_layout.setSpacing(12)
+
+        titulo_busqueda = QLabel('Busqueda')
+        titulo_busqueda.setStyleSheet(f'color: {BLANCO}; font-size: 16px; font-weight: bold;')
+
+        fila_busqueda = QHBoxLayout()
+        fila_busqueda.setSpacing(12)
+        fila_busqueda.addWidget(self.label_busqueda)
+        fila_busqueda.addWidget(self.input_busqueda)
+        fila_busqueda.addWidget(self.combo_filtro)
+        fila_busqueda.addWidget(self.boton_limpiar_filtro)
+        fila_busqueda.addStretch()
+
+        buscador_layout.addWidget(titulo_busqueda)
+        buscador_layout.addLayout(fila_busqueda)
+
+        contenedor_contenido = QWidget()
+        contenido_layout = QVBoxLayout(contenedor_contenido)
+        contenido_layout.setContentsMargins(20, 20, 20, 20)
+        contenido_layout.setSpacing(16)
+        contenido_layout.addWidget(buscador)
+        contenido_layout.addWidget(self.content_stack)
+        
+        #sidebar
         sidebar = construir.sidebar(
             items=[
                 {'texto': 'Dashboard', 'index': 0},
@@ -101,8 +184,9 @@ class ventanaPrincipal(QMainWindow):
             logo= 'ComercioTech',
             active_index=0
         )
-        layout.addWidget(sidebar)
-        layout.addWidget(self.content_stack)
+        
+        layout.addWidget(sidebar) 
+        layout.addWidget(contenedor_contenido) 
         return panel
     
     def mostrar_vista(self):

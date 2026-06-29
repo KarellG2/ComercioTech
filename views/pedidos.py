@@ -31,9 +31,9 @@ class Pedidos(QWidget):
             {'nombre': 'Cliente 2', 'productos': ['Producto 3'], 'numero': '987654321'}
         ]
         
-        tabla = construir.tabla(
+        self.tabla = construir.tabla(
             headers=['Nombre', 'Productos', 'numero'],
             datos=[['Cliente 1', pedidos[0]['productos'], '123456789'], 
                    ['Cliente 2', pedidos[1]['productos'], '987654321']]
         )
-        content_layout.addWidget(tabla)
+        content_layout.addWidget(self.tabla)

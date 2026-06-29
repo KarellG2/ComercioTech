@@ -1,12 +1,7 @@
-import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget,QVBoxLayout,QHBoxLayout, QStackedWidget, QLabel
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon
-from qt_material import apply_stylesheet
+from PyQt6.QtWidgets import QWidget,QVBoxLayout, QStackedWidget
 
 from assets.modules import Constructor
 from assets.modules.Constantes import *
-from funciones import Funciones
 
 construir = Constructor.Construir()
 
@@ -25,8 +20,8 @@ class Dashboard(QWidget):
         content_layout.setContentsMargins(20, 20, 20, 20)
         content_layout.setSpacing(20)
         
-        tabla = construir.tabla(
+        self.tabla = construir.tabla(
             headers=['Nombre', 'Correo', 'numero'],
             datos=[['Cliente 1', 'cliente1@example.com', '123456789'], ['Cliente 2', 'cliente2@example.com', '987654321']]
         )
-        content_layout.addWidget(tabla)
+        content_layout.addWidget(self.tabla)
