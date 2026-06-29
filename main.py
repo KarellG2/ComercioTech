@@ -92,7 +92,7 @@ class ventanaPrincipal(QMainWindow):
         self.content_stack.addWidget(self.vistaPedidos)
         
         self.label_busqueda, self.input_busqueda = construir.entrada(
-            label_texto         = 'Busqueda',
+            label_texto         = '',
             placeholder         = 'Ingrese su búsqueda',
             width               = 250,
             height              = 40

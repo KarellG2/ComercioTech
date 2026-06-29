@@ -131,7 +131,7 @@ class Construir:
             activo.setStyleSheet(estilo_activo)
         
 
-        for item in items:
+        for item in items: 
             icono = item.get('icono', '')
             texto = item.get('texto', '')
             index = item.get('index', 0)
