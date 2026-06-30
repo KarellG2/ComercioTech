@@ -87,4 +87,4 @@ class PantallaInicio(QWidget):
                 QMessageBox.warning(self, "Campos vacíos", "Por favor, complete todos los campos.")
                 return
             self.input_pass.clear()
-            self.main_window.mostrar_vista()  # Cambia a la vista del dashboard
+            self.main_window.mostrar_vista()  # Cambia al panel principal

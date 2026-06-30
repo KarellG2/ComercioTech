@@ -1,270 +1,261 @@
 from pymongo import MongoClient
+from pymongo.errors import PyMongoError, ServerSelectionTimeoutError
 
 
 class BaseDatos:
-
     def __init__(self):
-        self.cliente = MongoClient("mongodb+srv://samdxga_db_user:VTU5HJH9c4jU1D4D@cluster0.ajxnbri.mongodb.net/")
-
+        self.error = None
+        self.cliente = MongoClient(
+            "mongodb+srv://samdxga_db_user:VTU5HJH9c4jU1D4D@cluster0.ajxnbri.mongodb.net/",
+            serverSelectionTimeoutMS=5000
+        )
         self.db = self.cliente["ctech"]
+
+    def probar_conexion(self):
+        try:
+            self.cliente.admin.command("ping")
+            self.error = None
+            return True
+        except ServerSelectionTimeoutError as error:
+            self.error = f"No se pudo conectar a MongoDB: {error}"
+            return False
+        except PyMongoError as error:
+            self.error = f"Error de MongoDB: {error}"
+            return False
+
+    def _listar(self, cursor):
+        try:
+            datos = list(cursor)
+            self.error = None
+            return datos
+        except PyMongoError as error:
+            self.error = f"Error de MongoDB: {error}"
+            return []
+
+    def _imprimir_lista(self, datos):
+        for dato in datos:
+            print(dato)
 
     # =====================================================
     # CLIENTES
     # =====================================================
 
     def ver_clientes(self):
-        clientes = self.db.clientes.find()
-
-        for cliente in clientes:
-            print(cliente)
+        clientes = self._listar(self.db.clientes.find())
+        self._imprimir_lista(clientes)
+        return clientes
 
     def buscar_cliente(self, id_cliente):
-        cliente = self.db.clientes.find_one(
-            {"_id": id_cliente}
-        )
-
-        print(cliente)
+        try:
+            cliente = self.db.clientes.find_one({"_id": id_cliente})
+            self.error = None
+            print(cliente)
+            return cliente
+        except PyMongoError as error:
+            self.error = f"Error de MongoDB: {error}"
+            print(self.error)
+            return None
 
     def agregar_cliente(self, datos):
-
-        self.db.clientes.insert_one(datos)
-
-        print("Cliente agregado correctamente.")
+        try:
+            self.db.clientes.insert_one(datos)
+            self.error = None
+            print("Cliente agregado correctamente.")
+            return True
+        except PyMongoError as error:
+            self.error = f"No se pudo agregar el cliente: {error}"
+            print(self.error)
+            return False
 
     def actualizar_cliente(self, id_cliente, telefono):
-
-        self.db.clientes.update_one(
-            {"_id": id_cliente},
-            {
-                "$set": {
-                    "telefono": telefono
-                }
-            }
-        )
-
-        print("Cliente actualizado.")
+        try:
+            resultado = self.db.clientes.update_one(
+                {"_id": id_cliente},
+                {"$set": {"telefono": telefono}}
+            )
+            self.error = None
+            print("Cliente actualizado.")
+            return resultado.modified_count > 0
+        except PyMongoError as error:
+            self.error = f"No se pudo actualizar el cliente: {error}"
+            print(self.error)
+            return False
 
     def eliminar_cliente(self, id_cliente):
-
-        self.db.clientes.delete_one(
-            {"_id": id_cliente}
-        )
-
-        print("Cliente eliminado.")
+        try:
+            resultado = self.db.clientes.delete_one({"_id": id_cliente})
+            self.error = None
+            print("Cliente eliminado.")
+            return resultado.deleted_count > 0
+        except PyMongoError as error:
+            self.error = f"No se pudo eliminar el cliente: {error}"
+            print(self.error)
+            return False
 
     # =====================================================
     # PRODUCTOS
     # =====================================================
 
     def ver_productos(self):
-
-        productos = self.db.productos.find()
-
-        for producto in productos:
-            print(producto)
+        productos = self._listar(self.db.productos.find())
+        self._imprimir_lista(productos)
+        return productos
 
     def buscar_categoria(self, categoria):
-
-        productos = self.db.productos.find(
-            {
-                "categoria": categoria
-            }
-        )
-
-        for producto in productos:
-            print(producto)
+        productos = self._listar(self.db.productos.find({"categoria": categoria}))
+        self._imprimir_lista(productos)
+        return productos
 
     def buscar_precio(self, minimo, maximo):
-
-        productos = self.db.productos.find(
-            {
-                "precio": {
-                    "$gte": minimo,
-                    "$lte": maximo
-                }
-            }
+        productos = self._listar(
+            self.db.productos.find({"precio": {"$gte": minimo, "$lte": maximo}})
         )
-
-        for producto in productos:
-            print(producto)
+        self._imprimir_lista(productos)
+        return productos
 
     def buscar_stock(self):
-
-        productos = self.db.productos.find(
-            {
-                "stock": {
-                    "$lt": 15
-                }
-            }
-        )
-
-        for producto in productos:
-            print(producto)
+        productos = self._listar(self.db.productos.find({"stock": {"$lt": 15}}))
+        self._imprimir_lista(productos)
+        return productos
 
     def ordenar_precio(self):
-
-        productos = self.db.productos.find().sort(
-            "precio",
-            1
-        )
-
-        for producto in productos:
-            print(producto)
+        productos = self._listar(self.db.productos.find().sort("precio", 1))
+        self._imprimir_lista(productos)
+        return productos
 
     def agregar_producto(self, datos):
-
-        self.db.productos.insert_one(datos)
-
-        print("Producto agregado.")
+        try:
+            self.db.productos.insert_one(datos)
+            self.error = None
+            print("Producto agregado.")
+            return True
+        except PyMongoError as error:
+            self.error = f"No se pudo agregar el producto: {error}"
+            print(self.error)
+            return False
 
     def actualizar_stock(self, id_producto, stock):
-
-        self.db.productos.update_one(
-            {"_id": id_producto},
-            {
-                "$set": {
-                    "stock": stock
-                }
-            }
-        )
-
-        print("Stock actualizado.")
+        try:
+            resultado = self.db.productos.update_one(
+                {"_id": id_producto},
+                {"$set": {"stock": stock}}
+            )
+            self.error = None
+            print("Stock actualizado.")
+            return resultado.modified_count > 0
+        except PyMongoError as error:
+            self.error = f"No se pudo actualizar el stock: {error}"
+            print(self.error)
+            return False
 
     def eliminar_producto(self, id_producto):
-
-        self.db.productos.delete_one(
-            {
-                "_id": id_producto
-            }
-        )
-
-        print("Producto eliminado.")
+        try:
+            resultado = self.db.productos.delete_one({"_id": id_producto})
+            self.error = None
+            print("Producto eliminado.")
+            return resultado.deleted_count > 0
+        except PyMongoError as error:
+            self.error = f"No se pudo eliminar el producto: {error}"
+            print(self.error)
+            return False
 
     # =====================================================
     # PEDIDOS
     # =====================================================
 
     def ver_pedidos(self):
-
-        pedidos = self.db.pedidos.find()
-
-        for pedido in pedidos:
-            print(pedido)
+        pedidos = self._listar(self.db.pedidos.find())
+        self._imprimir_lista(pedidos)
+        return pedidos
 
     def buscar_pedido_cliente(self, id_cliente):
-
-        pedidos = self.db.pedidos.find(
-            {
-                "id_cliente": id_cliente
-            }
-        )
-
-        for pedido in pedidos:
-            print(pedido)
+        pedidos = self._listar(self.db.pedidos.find({"id_cliente": id_cliente}))
+        self._imprimir_lista(pedidos)
+        return pedidos
 
     def buscar_estado(self, estado):
-
-        pedidos = self.db.pedidos.find(
-            {
-                "estado": estado
-            }
-        )
-
-        for pedido in pedidos:
-            print(pedido)
+        pedidos = self._listar(self.db.pedidos.find({"estado": estado}))
+        self._imprimir_lista(pedidos)
+        return pedidos
 
     def actualizar_estado(self, id_pedido, estado):
-
-        self.db.pedidos.update_one(
-            {
-                "_id": id_pedido
-            },
-            {
-                "$set": {
-                    "estado": estado
-                }
-            }
-        )
-
-        print("Estado actualizado.")
+        try:
+            resultado = self.db.pedidos.update_one(
+                {"_id": id_pedido},
+                {"$set": {"estado": estado}}
+            )
+            self.error = None
+            print("Estado actualizado.")
+            return resultado.modified_count > 0
+        except PyMongoError as error:
+            self.error = f"No se pudo actualizar el pedido: {error}"
+            print(self.error)
+            return False
 
     def eliminar_pedido(self, id_pedido):
-
-        self.db.pedidos.delete_one(
-            {
-                "_id": id_pedido
-            }
-        )
-
-        print("Pedido eliminado.")
+        try:
+            resultado = self.db.pedidos.delete_one({"_id": id_pedido})
+            self.error = None
+            print("Pedido eliminado.")
+            return resultado.deleted_count > 0
+        except PyMongoError as error:
+            self.error = f"No se pudo eliminar el pedido: {error}"
+            print(self.error)
+            return False
 
     def historial_cliente(self, id_cliente):
-
-        historial = self.db.pedidos.find(
-            {
-                "id_cliente": id_cliente
-            }
-        )
-
-        for pedido in historial:
-            print(pedido)
+        historial = self._listar(self.db.pedidos.find({"id_cliente": id_cliente}))
+        self._imprimir_lista(historial)
+        return historial
 
     def pedidos_fecha(self, inicio, fin):
-
-        pedidos = self.db.pedidos.find(
-            {
-                "fecha_pedido": {
-                    "$gte": inicio,
-                    "$lte": fin
-                }
-            }
+        pedidos = self._listar(
+            self.db.pedidos.find({"fecha_pedido": {"$gte": inicio, "$lte": fin}})
         )
-
-        for pedido in pedidos:
-            print(pedido)
+        self._imprimir_lista(pedidos)
+        return pedidos
 
     # =====================================================
     # EMPLEADOS
     # =====================================================
 
     def ver_empleados(self):
+        empleados = self._listar(self.db.empleados.find())
+        self._imprimir_lista(empleados)
+        return empleados
 
-        empleados = self.db.empleados.find()
-
-        for empleado in empleados:
-            print(empleado)
-
-    # def login(self, correo, contraseña):
-
-    #     empleado = self.db.empleados.find_one(
-    #         {
-    #             "correo": correo,
-    #             "contraseña": contraseña
-    #         }
-    #     )
+    def login(self, correo, contrasena):
+        try:
+            empleado = self.db.empleados.find_one({
+                "correo": correo,
+                "$or": [
+                    {"contrasena": contrasena},
+                    {"contraseña": contrasena}
+                ]
+            })
+            self.error = None
+        except PyMongoError as error:
+            self.error = f"Error de MongoDB: {error}"
+            print(self.error)
+            return None
 
         if empleado:
-            print("Inicio de sesión correcto.")
+            print("Inicio de sesion correcto.")
         else:
-            print("Correo o contraseña incorrectos.")
+            print("Correo o contrasena incorrectos.")
+
+        return empleado
 
     def buscar_administradores(self):
-
-        administradores = self.db.empleados.find(
-            {
-                "rol": "Administrador"
-            }
-        )
-
-        for admin in administradores:
-            print(admin)
+        administradores = self._listar(self.db.empleados.find({"rol": "Administrador"}))
+        self._imprimir_lista(administradores)
+        return administradores
 
     # =====================================================
     # CONSULTAS AVANZADAS
     # =====================================================
 
     def pedidos_clientes(self):
-
         consulta = [
             {
                 "$lookup": {
@@ -276,51 +267,54 @@ class BaseDatos:
             }
         ]
 
-        resultado = self.db.pedidos.aggregate(consulta)
+        try:
+            resultado = self._listar(self.db.pedidos.aggregate(consulta))
+        except PyMongoError as error:
+            self.error = f"Error de MongoDB: {error}"
+            print(self.error)
+            return []
 
-        for dato in resultado:
-            print(dato)
+        self._imprimir_lista(resultado)
+        return resultado
 
     def total_por_cliente(self):
-
         consulta = [
             {
                 "$group": {
                     "_id": "$id_cliente",
-                    "Total Comprado": {
-                        "$sum": "$total_pedido"
-                    }
+                    "Total Comprado": {"$sum": "$total_pedido"}
                 }
             }
         ]
 
-        resultado = self.db.pedidos.aggregate(consulta)
+        try:
+            resultado = self._listar(self.db.pedidos.aggregate(consulta))
+        except PyMongoError as error:
+            self.error = f"Error de MongoDB: {error}"
+            print(self.error)
+            return []
 
-        for dato in resultado:
-            print(dato)
+        self._imprimir_lista(resultado)
+        return resultado
 
     def producto_mas_vendido(self):
-
         consulta = [
-            {
-                "$unwind": "$productos_pedidos"
-            },
+            {"$unwind": "$productos_pedidos"},
             {
                 "$group": {
                     "_id": "$productos_pedidos.id_producto",
-                    "Cantidad": {
-                        "$sum": "$productos_pedidos.cantidad"
-                    }
+                    "Cantidad": {"$sum": "$productos_pedidos.cantidad"}
                 }
             },
-            {
-                "$sort": {
-                    "Cantidad": -1
-                }
-            }
+            {"$sort": {"Cantidad": -1}}
         ]
 
-        resultado = self.db.pedidos.aggregate(consulta)
+        try:
+            resultado = self._listar(self.db.pedidos.aggregate(consulta))
+        except PyMongoError as error:
+            self.error = f"Error de MongoDB: {error}"
+            print(self.error)
+            return []
 
-        for dato in resultado:
-            print(dato)
+        self._imprimir_lista(resultado)
+        return resultado
