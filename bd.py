@@ -1,320 +1,299 @@
-from pymongo import MongoClient
-from pymongo.errors import PyMongoError, ServerSelectionTimeoutError
+import json
+
+from PyQt6.QtWidgets import (
+    QDialog,
+    QDialogButtonBox,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QTextEdit,
+    QWidget,
+    QVBoxLayout,
+)
+
+from assets.modules import Constructor
+from assets.modules.Constantes import *
 
 
-class BaseDatos:
-    def __init__(self):
-        self.error = None
-        self.cliente = MongoClient(
-            "mongodb+srv://samdxga_db_user:VTU5HJH9c4jU1D4D@cluster0.ajxnbri.mongodb.net/",
-            serverSelectionTimeoutMS=5000
+construir = Constructor.Construir()
+
+
+class Productos(QWidget):
+    def __init__(self, main_window):
+        super().__init__()
+        self.mainWindow = main_window
+        self.registro_seleccionado = None
+        self.documentos_por_id = {}
+        self.setStyleSheet(f"background-color:{NEGRO}")
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(20, 20, 20, 20)
+        self.layout.setSpacing(12)
+
+        self.mensaje = QLabel("")
+        self.mensaje.setStyleSheet(f"color: {BLANCO}; font-size: 13px;")
+        self.layout.addWidget(self.mensaje)
+
+        self._crear_botones_accion()
+
+        self.tabla = None
+        self._actualizar_tabla(
+            ["ID", "Nombre", "Descripcion", "Precio", "Categoria", "Stock"],
+            []
         )
-        self.db = self.cliente["ctech"]
 
-    def probar_conexion(self):
-        try:
-            self.cliente.admin.command("ping")
-            self.error = None
-            return True
-        except ServerSelectionTimeoutError as error:
-            self.error = f"No se pudo conectar a MongoDB: {error}"
-            return False
-        except PyMongoError as error:
-            self.error = f"Error de MongoDB: {error}"
-            return False
+    def _crear_botones_accion(self):
+        acciones = QHBoxLayout()
+        acciones.setSpacing(10)
 
-    def _listar(self, cursor):
-        try:
-            datos = list(cursor)
-            self.error = None
-            return datos
-        except PyMongoError as error:
-            self.error = f"Error de MongoDB: {error}"
-            return []
-
-    def _imprimir_lista(self, datos):
-        for dato in datos:
-            print(dato)
-
-    # =====================================================
-    # CLIENTES
-    # =====================================================
-
-    def ver_clientes(self):
-        clientes = self._listar(self.db.clientes.find())
-        self._imprimir_lista(clientes)
-        return clientes
-
-    def buscar_cliente(self, id_cliente):
-        try:
-            cliente = self.db.clientes.find_one({"_id": id_cliente})
-            self.error = None
-            print(cliente)
-            return cliente
-        except PyMongoError as error:
-            self.error = f"Error de MongoDB: {error}"
-            print(self.error)
-            return None
-
-    def agregar_cliente(self, datos):
-        try:
-            self.db.clientes.insert_one(datos)
-            self.error = None
-            print("Cliente agregado correctamente.")
-            return True
-        except PyMongoError as error:
-            self.error = f"No se pudo agregar el cliente: {error}"
-            print(self.error)
-            return False
-
-    def actualizar_cliente(self, id_cliente, telefono):
-        try:
-            resultado = self.db.clientes.update_one(
-                {"_id": id_cliente},
-                {"$set": {"telefono": telefono}}
-            )
-            self.error = None
-            print("Cliente actualizado.")
-            return resultado.modified_count > 0
-        except PyMongoError as error:
-            self.error = f"No se pudo actualizar el cliente: {error}"
-            print(self.error)
-            return False
-
-    def eliminar_cliente(self, id_cliente):
-        try:
-            resultado = self.db.clientes.delete_one({"_id": id_cliente})
-            self.error = None
-            print("Cliente eliminado.")
-            return resultado.deleted_count > 0
-        except PyMongoError as error:
-            self.error = f"No se pudo eliminar el cliente: {error}"
-            print(self.error)
-            return False
-
-    # =====================================================
-    # PRODUCTOS
-    # =====================================================
-
-    def ver_productos(self):
-        productos = self._listar(self.db.productos.find())
-        self._imprimir_lista(productos)
-        return productos
-
-    def buscar_categoria(self, categoria):
-        productos = self._listar(self.db.productos.find({"categoria": categoria}))
-        self._imprimir_lista(productos)
-        return productos
-
-    def buscar_precio(self, minimo, maximo):
-        productos = self._listar(
-            self.db.productos.find({"precio": {"$gte": minimo, "$lte": maximo}})
+        self.boton_agregar = construir.boton(
+            texto="Agregar",
+            comando=self.agregar_registro,
+            color=COLOR_PRINCIPAL,
+            fg=BLANCO,
+            width=120,
+            height=38
         )
-        self._imprimir_lista(productos)
-        return productos
-
-    def buscar_stock(self):
-        productos = self._listar(self.db.productos.find({"stock": {"$lt": 15}}))
-        self._imprimir_lista(productos)
-        return productos
-
-    def ordenar_precio(self):
-        productos = self._listar(self.db.productos.find().sort("precio", 1))
-        self._imprimir_lista(productos)
-        return productos
-
-    def agregar_producto(self, datos):
-        try:
-            self.db.productos.insert_one(datos)
-            self.error = None
-            print("Producto agregado.")
-            return True
-        except PyMongoError as error:
-            self.error = f"No se pudo agregar el producto: {error}"
-            print(self.error)
-            return False
-
-    def actualizar_stock(self, id_producto, stock):
-        try:
-            resultado = self.db.productos.update_one(
-                {"_id": id_producto},
-                {"$set": {"stock": stock}}
-            )
-            self.error = None
-            print("Stock actualizado.")
-            return resultado.modified_count > 0
-        except PyMongoError as error:
-            self.error = f"No se pudo actualizar el stock: {error}"
-            print(self.error)
-            return False
-
-    def eliminar_producto(self, id_producto):
-        try:
-            resultado = self.db.productos.delete_one({"_id": id_producto})
-            self.error = None
-            print("Producto eliminado.")
-            return resultado.deleted_count > 0
-        except PyMongoError as error:
-            self.error = f"No se pudo eliminar el producto: {error}"
-            print(self.error)
-            return False
-
-    # =====================================================
-    # PEDIDOS
-    # =====================================================
-
-    def ver_pedidos(self):
-        pedidos = self._listar(self.db.pedidos.find())
-        self._imprimir_lista(pedidos)
-        return pedidos
-
-    def buscar_pedido_cliente(self, id_cliente):
-        pedidos = self._listar(self.db.pedidos.find({"id_cliente": id_cliente}))
-        self._imprimir_lista(pedidos)
-        return pedidos
-
-    def buscar_estado(self, estado):
-        pedidos = self._listar(self.db.pedidos.find({"estado": estado}))
-        self._imprimir_lista(pedidos)
-        return pedidos
-
-    def actualizar_estado(self, id_pedido, estado):
-        try:
-            resultado = self.db.pedidos.update_one(
-                {"_id": id_pedido},
-                {"$set": {"estado": estado}}
-            )
-            self.error = None
-            print("Estado actualizado.")
-            return resultado.modified_count > 0
-        except PyMongoError as error:
-            self.error = f"No se pudo actualizar el pedido: {error}"
-            print(self.error)
-            return False
-
-    def eliminar_pedido(self, id_pedido):
-        try:
-            resultado = self.db.pedidos.delete_one({"_id": id_pedido})
-            self.error = None
-            print("Pedido eliminado.")
-            return resultado.deleted_count > 0
-        except PyMongoError as error:
-            self.error = f"No se pudo eliminar el pedido: {error}"
-            print(self.error)
-            return False
-
-    def historial_cliente(self, id_cliente):
-        historial = self._listar(self.db.pedidos.find({"id_cliente": id_cliente}))
-        self._imprimir_lista(historial)
-        return historial
-
-    def pedidos_fecha(self, inicio, fin):
-        pedidos = self._listar(
-            self.db.pedidos.find({"fecha_pedido": {"$gte": inicio, "$lte": fin}})
+        self.boton_editar = construir.boton(
+            texto="Editar",
+            comando=self.editar_registro,
+            color=NEGRO,
+            fg=BLANCO,
+            width=120,
+            height=38
         )
-        self._imprimir_lista(pedidos)
-        return pedidos
+        self.boton_eliminar = construir.boton(
+            texto="Eliminar",
+            comando=self.eliminar_registro,
+            color=ROJO,
+            fg=BLANCO,
+            width=120,
+            height=38
+        )
 
-    # =====================================================
-    # EMPLEADOS
-    # =====================================================
+        acciones.addWidget(self.boton_agregar)
+        acciones.addWidget(self.boton_editar)
+        acciones.addWidget(self.boton_eliminar)
+        acciones.addStretch()
+        self.layout.addLayout(acciones)
 
-    def ver_empleados(self):
-        empleados = self._listar(self.db.empleados.find())
-        self._imprimir_lista(empleados)
-        return empleados
-
-    def login(self, correo, contrasena):
-        try:
-            empleado = self.db.empleados.find_one({
-                "correo": correo,
-                "$or": [
-                    {"contrasena": contrasena},
-                    {"contraseña": contrasena}
-                ]
-            })
-            self.error = None
-        except PyMongoError as error:
-            self.error = f"Error de MongoDB: {error}"
-            print(self.error)
-            return None
-
-        if empleado:
-            print("Inicio de sesion correcto.")
+    def cargar_datos(self, texto="", filtro="Todos"):
+        if texto and filtro == "Categoria":
+            productos = self.mainWindow.bd.buscar_categoria(texto)
         else:
-            print("Correo o contrasena incorrectos.")
+            productos = self.mainWindow.bd.ver_productos()
 
-        return empleado
+        filas = []
+        self.documentos_por_id = {}
 
-    def buscar_administradores(self):
-        administradores = self._listar(self.db.empleados.find({"rol": "Administrador"}))
-        self._imprimir_lista(administradores)
-        return administradores
+        for producto in productos:
+            id_producto = str(producto.get("_id", ""))
+            self.documentos_por_id[id_producto] = producto
+            fila = [
+                id_producto,
+                producto.get("nombre", ""),
+                self._formatear_descripcion(producto.get("descripcion", "")),
+                producto.get("precio", ""),
+                producto.get("categoria", ""),
+                producto.get("stock", "")
+            ]
 
-    # =====================================================
-    # CONSULTAS AVANZADAS
-    # =====================================================
+            if self._coincide(fila, texto, filtro):
+                filas.append(fila)
 
-    def pedidos_clientes(self):
-        consulta = [
-            {
-                "$lookup": {
-                    "from": "clientes",
-                    "localField": "id_cliente",
-                    "foreignField": "_id",
-                    "as": "cliente"
-                }
-            }
-        ]
+        self._actualizar_tabla(
+            ["ID", "Nombre", "Descripcion", "Precio", "Categoria", "Stock"],
+            filas
+        )
+
+    def agregar_registro(self):
+        datos = self._mostrar_dialogo_producto("Agregar producto")
+        if not datos:
+            return
+
+        self.mainWindow.bd.agregar_producto(datos)
+        self._recargar_tabla()
+
+    def editar_registro(self):
+        id_producto = self._obtener_id_seleccionado()
+        if not id_producto:
+            return
+
+        producto = self.documentos_por_id.get(id_producto, {})
+        datos = self._mostrar_dialogo_producto("Editar producto", producto)
+        if not datos:
+            return
+
+        self.mainWindow.bd.actualizar_producto(id_producto, datos)
+        self.registro_seleccionado = None
+        self._recargar_tabla()
+
+    def eliminar_registro(self):
+        id_producto = self._obtener_id_seleccionado()
+        if not id_producto:
+            return
+
+        respuesta = QMessageBox.question(
+            self,
+            "Eliminar producto",
+            "¿Seguro que quieres eliminar el producto seleccionado?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+
+        if respuesta != QMessageBox.StandardButton.Yes:
+            return
+
+        self.mainWindow.bd.eliminar_producto(id_producto)
+        self.registro_seleccionado = None
+        self._recargar_tabla()
+
+    def seleccionar_registro(self, fila):
+        self.registro_seleccionado = fila
+
+    def _obtener_id_seleccionado(self):
+        if not self.registro_seleccionado:
+            QMessageBox.warning(self, "Sin selección", "Selecciona un registro de la tabla primero.")
+            return None
+
+        return self.registro_seleccionado.get("ID")
+
+    def _mostrar_dialogo_producto(self, titulo, datos=None):
+        datos = datos or {}
+
+        dialogo = QDialog(self)
+        dialogo.setWindowTitle(titulo)
+        dialogo.setMinimumWidth(460)
+        dialogo.setStyleSheet(f"""
+            QDialog {{ background-color: {NEGRO}; }}
+            QLabel {{ color: {BLANCO}; font-weight: bold; }}
+            QLineEdit, QTextEdit {{
+                background-color: transparent;
+                color: {BLANCO};
+                border: 2px solid {COLOR_PRINCIPAL};
+                border-radius: 14px;
+                padding: 6px 10px;
+            }}
+        """)
+
+        layout = QFormLayout(dialogo)
+        layout.setSpacing(12)
+
+        input_nombre = QLineEdit(str(datos.get("nombre", "")))
+        input_descripcion = QTextEdit(self._descripcion_para_editar(datos.get("descripcion", "")))
+        input_descripcion.setFixedHeight(90)
+        input_precio = QLineEdit(str(datos.get("precio", "")))
+        input_categoria = QLineEdit(str(datos.get("categoria", "")))
+        input_stock = QLineEdit(str(datos.get("stock", "")))
+
+        layout.addRow("Nombre", input_nombre)
+        layout.addRow("Descripción", input_descripcion)
+        layout.addRow("Precio", input_precio)
+        layout.addRow("Categoría", input_categoria)
+        layout.addRow("Stock", input_stock)
+
+        botones = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        botones.accepted.connect(dialogo.accept)
+        botones.rejected.connect(dialogo.reject)
+        layout.addRow(botones)
+
+        if dialogo.exec() != QDialog.DialogCode.Accepted:
+            return None
+
+        nombre = input_nombre.text().strip()
+        if not nombre:
+            QMessageBox.warning(self, "Campo obligatorio", "El nombre del producto no puede quedar vacío.")
+            return None
 
         try:
-            resultado = self._listar(self.db.pedidos.aggregate(consulta))
-        except PyMongoError as error:
-            self.error = f"Error de MongoDB: {error}"
-            print(self.error)
-            return []
+            precio = self._convertir_numero(input_precio.text().strip())
+            stock = int(input_stock.text().strip() or 0)
+        except ValueError:
+            QMessageBox.warning(self, "Dato inválido", "Precio y stock deben ser números válidos.")
+            return None
 
-        self._imprimir_lista(resultado)
-        return resultado
+        return {
+            "nombre": nombre,
+            "descripcion": self._leer_descripcion(input_descripcion.toPlainText().strip()),
+            "precio": precio,
+            "categoria": input_categoria.text().strip(),
+            "stock": stock
+        }
 
-    def total_por_cliente(self):
-        consulta = [
-            {
-                "$group": {
-                    "_id": "$id_cliente",
-                    "Total Comprado": {"$sum": "$total_pedido"}
-                }
-            }
-        ]
+    def _convertir_numero(self, texto):
+        if not texto:
+            return 0
 
-        try:
-            resultado = self._listar(self.db.pedidos.aggregate(consulta))
-        except PyMongoError as error:
-            self.error = f"Error de MongoDB: {error}"
-            print(self.error)
-            return []
+        if "." in texto:
+            return float(texto)
 
-        self._imprimir_lista(resultado)
-        return resultado
+        return int(texto)
 
-    def producto_mas_vendido(self):
-        consulta = [
-            {"$unwind": "$productos_pedidos"},
-            {
-                "$group": {
-                    "_id": "$productos_pedidos.id_producto",
-                    "Cantidad": {"$sum": "$productos_pedidos.cantidad"}
-                }
-            },
-            {"$sort": {"Cantidad": -1}}
-        ]
+    def _descripcion_para_editar(self, descripcion):
+        if isinstance(descripcion, (list, dict)):
+            return json.dumps(descripcion, ensure_ascii=False, indent=2)
 
-        try:
-            resultado = self._listar(self.db.pedidos.aggregate(consulta))
-        except PyMongoError as error:
-            self.error = f"Error de MongoDB: {error}"
-            print(self.error)
-            return []
+        return str(descripcion)
 
-        self._imprimir_lista(resultado)
-        return resultado
+    def _leer_descripcion(self, texto):
+        if texto.startswith("[") or texto.startswith("{"):
+            try:
+                return json.loads(texto)
+            except json.JSONDecodeError:
+                return texto
+
+        return texto
+
+    def _recargar_tabla(self):
+        if hasattr(self.mainWindow, "aplicar_busqueda"):
+            self.mainWindow.aplicar_busqueda()
+        else:
+            self.cargar_datos()
+
+    def _formatear_descripcion(self, descripcion):
+        if isinstance(descripcion, list):
+            partes = []
+            for item in descripcion:
+                if isinstance(item, dict):
+                    partes.extend(f"{clave}: {valor}" for clave, valor in item.items())
+                else:
+                    partes.append(str(item))
+            return " | ".join(partes)
+
+        if isinstance(descripcion, dict):
+            return " | ".join(f"{clave}: {valor}" for clave, valor in descripcion.items())
+
+        return descripcion
+
+    def _coincide(self, fila, texto, filtro):
+        if not texto:
+            return True
+
+        texto = texto.lower()
+        campos = {
+            "Todos": fila,
+            "Nombre": [fila[1]],
+            "Categoria": [fila[4]],
+            "Precio": [fila[3]]
+        }
+
+        valores = campos.get(filtro, fila)
+        return any(texto in str(valor).lower() for valor in valores)
+
+    def _actualizar_tabla(self, headers, filas):
+        if self.tabla:
+            self.layout.removeWidget(self.tabla)
+            self.tabla.deleteLater()
+
+        if self.mainWindow.bd.error:
+            self.mensaje.setText(self.mainWindow.bd.error)
+        else:
+            self.mensaje.setText(f"Productos encontrados: {len(filas)}")
+
+        self.tabla = construir.tabla(
+            headers=headers,
+            datos=filas,
+            seleccionar=self.seleccionar_registro
+        )
+        self.layout.addWidget(self.tabla)
