@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QStackedWidget, QPushButton, QVBoxLayout, QFrame, QLabel, QLineEdit, QComboBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QStackedWidget, QPushButton, QVBoxLayout, QFrame, QLabel, QComboBox
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from qt_material import apply_stylesheet
@@ -7,10 +7,10 @@ from qt_material import apply_stylesheet
 from assets.modules import Constructor
 from assets.modules.Constantes import *
 from funciones import Funciones
+from bd import BaseDatos
 
 # Importar Vistas
 from views.login import PantallaInicio
-from views.dashboard import Dashboard
 from views.pedidos import Pedidos
 from views.productos import Productos
 from views.clientes import Clientes
@@ -29,6 +29,7 @@ class ventanaPrincipal(QMainWindow):
         self.setStyleSheet(f"background-color:{NEGRO}")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setWindowIcon(QIcon("assets/images/icon.ico")) 
+        self.bd = BaseDatos()
 
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack)
@@ -81,12 +82,10 @@ class ventanaPrincipal(QMainWindow):
         
         self.content_stack = QStackedWidget()
         
-        self.vistaDashboard = Dashboard(self)
         self.vistaProductos = Productos(self)
         self.vistaClientes = Clientes(self)
         self.vistaPedidos = Pedidos(self)
         
-        self.content_stack.addWidget(self.vistaDashboard)
         self.content_stack.addWidget(self.vistaProductos)
         self.content_stack.addWidget(self.vistaClientes)
         self.content_stack.addWidget(self.vistaPedidos)
@@ -132,12 +131,15 @@ class ventanaPrincipal(QMainWindow):
 
         self.boton_limpiar_filtro = construir.boton(
             texto='Limpiar',
-            comando=None,
+            comando=self.limpiar_busqueda,
             color=NEGRO,
             fg=BLANCO,
             width=120,
             height=40
         )
+        self.input_busqueda.textChanged.connect(self.aplicar_busqueda)
+        self.combo_filtro.currentTextChanged.connect(self.aplicar_busqueda)
+        self.content_stack.currentChanged.connect(self.aplicar_busqueda)
 
         buscador = QFrame()
         buscador.setStyleSheet(f'''
@@ -175,10 +177,9 @@ class ventanaPrincipal(QMainWindow):
         #sidebar
         sidebar = construir.sidebar(
             items=[
-                {'texto': 'Dashboard', 'index': 0},
-                {'texto': 'Productos', 'index': 1},
-                {'texto': 'Clientes', 'index': 2},
-                {'texto': 'Pedidos', 'index': 3}
+                {'texto': 'Productos', 'index': 0},
+                {'texto': 'Clientes', 'index': 1},
+                {'texto': 'Pedidos', 'index': 2}
             ],
             stack = self.content_stack,
             logo= 'ComercioTech',
@@ -192,6 +193,22 @@ class ventanaPrincipal(QMainWindow):
     def mostrar_vista(self):
         self.stack.setCurrentIndex(1)
         self.content_stack.setCurrentIndex(0)
+        self.aplicar_busqueda()
+
+    def aplicar_busqueda(self, *args):
+        if not hasattr(self, "content_stack"):
+            return
+
+        vista_actual = self.content_stack.currentWidget()
+        if hasattr(vista_actual, "cargar_datos"):
+            texto = self.input_busqueda.text().strip()
+            filtro = self.combo_filtro.currentText()
+            vista_actual.cargar_datos(texto, filtro)
+
+    def limpiar_busqueda(self):
+        self.input_busqueda.clear()
+        self.combo_filtro.setCurrentText("Todos")
+        self.aplicar_busqueda()
 
 if __name__ =="__main__":
 
